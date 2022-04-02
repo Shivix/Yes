@@ -37,7 +37,7 @@ BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Custom
 BreakBeforeInheritanceComma: true
 BreakBeforeTernaryOperators: true
-BreakConstructorInitializers: BeforeColon
+BreakConstructorInitializers: BeforeComma
 BreakConstructorInitializersBeforeComma: true
 BreakStringLiterals: true
 ColumnLimit: 100
@@ -65,7 +65,7 @@ IncludeCategories:
 IncludeIsMainRegex: (Test)?$
 IndentCaseLabels: false
 IndentWidth: 4
-IndentWrappedFunctionNames: true
+IndentWrappedFunctionNames: false
 JavaScriptQuotes: Leave
 JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: true
