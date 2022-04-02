@@ -10,7 +10,7 @@ LGTM Has to be set up manually after template is created:
 
 ## About Yes
 
-[Mine](https://github.com/Shivix) and [Asura](https://github.com/sidalay-s) submission to Jason
+[Mine](https://github.com/Shivix) and [Asura's](https://github.com/sidalay-s) submission to Jason
 Turner's Best Practices Game Jam (April 2022).
 
 ## More Details
