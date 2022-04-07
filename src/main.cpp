@@ -3,9 +3,9 @@
 #include <ftxui/component/screen_interactive.hpp>
 #include <spdlog/spdlog.h>
 
-#include <array>
-#include <cmath>
 #include <numbers>
+
+#include "instruments.hpp"
 
 [[nodiscard]] constexpr auto make_lock_cylinder(const std::array<double, 3>& offsets)
 {
@@ -77,18 +77,22 @@ Options: -h --help    Show this screen.
                 // version string, acquired from config.hpp via CMake
                 Yes::cmake::project_version)) };
 
-        std::array<double, 3> ring_offsets{ 0.0, std::numeric_limits<double>::max_digits10, 0.0 };
+        std::array<double, 3> ring_offsets{ 0.0, 0.0, 0.0 };
         std::size_t current_ring{ 0 };
         auto screen{ ftxui::ScreenInteractive::TerminalOutput() };
 
         const auto cylinder{ ftxui::Renderer(make_lock_cylinder(ring_offsets)) };
+        const auto graph{ ftxui::Renderer(make_plot_graph(current_ring, ring_offsets)) };
+        const auto text_box{ ftxui::Renderer(make_info_box(current_ring)) };
 
         const auto game_logic{ ftxui::Renderer([&] {
             if (current_ring >= ring_offsets.size()) {
                 screen.ExitLoopClosure()();
                 return ftxui::hbox(ftxui::text("GAME OVER")) | ftxui::border;
             }
-            return cylinder->Render();
+            return ftxui::hbox(cylinder->Render() | ftxui::borderDouble,
+                ftxui::vbox(graph->Render() | ftxui::borderDouble,
+                    text_box->Render() | ftxui::borderDouble));
         }) };
 
         const auto event_handler{ ftxui::CatchEvent(
