@@ -18,36 +18,35 @@
         static constexpr int outer_size{ 70 };
         static constexpr int middle_size{ 45 };
         static constexpr int inner_size{ 20 };
-        static constexpr int pin_size{ 7 };
+        static constexpr int node_size{ 7 };
+
+        canvas.DrawPointCircle(center, center, outer_size - 1);
         canvas.DrawPointCircle(center, center, outer_size);
+        canvas.DrawPointCircle(center, center, outer_size + 1);
+
+        canvas.DrawPointCircle(center, center, middle_size - 1);
         canvas.DrawPointCircle(center, center, middle_size);
+        canvas.DrawPointCircle(center, center, middle_size + 1);
+
+        canvas.DrawPointCircle(center, center, inner_size - 1);
         canvas.DrawPointCircle(center, center, inner_size);
+        canvas.DrawPointCircle(center, center, inner_size + 1);
 
         using std::numbers::pi;
-        static constexpr double PI_2{ pi / 2 };
-        static constexpr double TAU_3{ 2 * pi / 3 };
 
-        for (auto i{ 1 }; i <= 4; ++i) {
-            const auto pin_x{ static_cast<int>(
-                center + outer_size * std::cos(PI_2 * (i + offsets[0]))) };
-            const auto pin_y{ static_cast<int>(
-                center + outer_size * std::sin(PI_2 * (i + offsets[0]))) };
-            canvas.DrawPointCircleFilled(pin_x, pin_y, pin_size, ftxui::Color::Blue);
-        }
-        for (auto i{ 1 }; i <= 3; ++i) {
-            const auto pin_x{ static_cast<int>(
-                center + middle_size * std::cos(TAU_3 * (i + offsets[1]))) };
-            const auto pin_y{ static_cast<int>(
-                center + middle_size * std::sin(TAU_3 * (i + offsets[1]))) };
-            canvas.DrawPointCircleFilled(pin_x, pin_y, pin_size, ftxui::Color::Purple);
-        }
-        for (auto i{ 1 }; i <= 2; ++i) {
-            const auto pin_x{ static_cast<int>(
-                center + inner_size * std::cos(pi * (i + offsets[2]))) };
-            const auto pin_y{ static_cast<int>(
-                center + inner_size * std::sin(pi * (i + offsets[2]))) };
-            canvas.DrawPointCircleFilled(pin_x, pin_y, pin_size, ftxui::Color::Red);
-        }
+        // node positions
+        const auto outer_x{ static_cast<int>(center + outer_size * std::cos(pi + offsets[0])) };
+        const auto outer_y{ static_cast<int>(center + outer_size * std::sin(pi + offsets[0])) };
+        canvas.DrawPointCircleFilled(outer_x, outer_y, node_size, ftxui::Color::Blue);
+
+        const auto middle_x{ static_cast<int>(center + middle_size * std::cos(pi + offsets[1])) };
+        const auto middle_y{ static_cast<int>(center + middle_size * std::sin(pi + offsets[1])) };
+        canvas.DrawPointCircleFilled(middle_x, middle_y, node_size, ftxui::Color::Purple);
+
+        const auto inner_x{ static_cast<int>(center + inner_size * std::cos(pi + offsets[2])) };
+        const auto inner_y{ static_cast<int>(center + inner_size * std::sin(pi + offsets[2])) };
+        canvas.DrawPointCircleFilled(inner_x, inner_y, node_size, ftxui::Color::Red);
+
         return ftxui::canvas(std::move(canvas));
     };
 }
@@ -108,6 +107,7 @@ Options: -h --help    Show this screen.
         screen.Loop(event_handler);
 
         return 0;
+
     } catch (const std::exception& e) {
         fmt::print("Unhandled exception in main: {}", e.what());
     }

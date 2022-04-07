@@ -42,9 +42,9 @@
             static constexpr auto frequency{ 0.14 };
             static constexpr auto floor_thing{ 10.0 };
             static constexpr auto spikiness{ 0.42 };
-            graph_points.emplace_back(static_cast<int>(
-                zero_point + (offsets.at(ring) * spike_height) * std::cos(point * frequency)
-                + floor_thing * std::sin(point * spikiness)));
+            graph_points.emplace_back(
+                static_cast<int>(zero_point + spike_height * std::cos(point * frequency)
+                                 + floor_thing * std::sin(point * spikiness)));
         }
 
         for (std::size_t i{ 1 }; i < max_plots - 1; ++i) {
