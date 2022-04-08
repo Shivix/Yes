@@ -3,8 +3,7 @@
 
 #include <ftxui/component/component.hpp>
 
-#include <array>
-#include <cmath>
+#include "game_logic.hpp"
 
 [[nodiscard]] constexpr auto make_info_box(const std::size_t& ring)
 {
@@ -25,7 +24,8 @@
 }
 
 [[nodiscard]] constexpr auto make_plot_graph(const std::size_t& ring,
-    std::array<double, 3>& offsets)
+    const std::array<double, 3>& offsets,
+    const std::array<int, 3>& endpoints)
 {
     return [&] {
         static constexpr int canvas_size{ 160 };
@@ -36,9 +36,9 @@
         graph_points.reserve(max_plots);
 
         for (std::size_t i{ 0 }; i < max_plots; ++i) {
-            const auto point{ static_cast<double>(i) - offsets.at(ring) * 40 };
+            const auto point{ static_cast<double>(i) - offsets.at(ring) * 40.0 };
             static constexpr auto zero_point{ 50.0 };
-            static constexpr auto spike_height{ 20.0 };
+            const auto spike_height{ check_pin_position(offsets.at(ring), endpoints.at(ring)) };
             static constexpr auto frequency{ 0.14 };
             static constexpr auto floor_thing{ 10.0 };
             static constexpr auto spikiness{ 0.42 };
@@ -58,4 +58,4 @@
     };
 }
 
-#endif
+#endif// INSTRUMENTS_HPP

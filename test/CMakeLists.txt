@@ -18,7 +18,8 @@ add_test(NAME cli.version_matches COMMAND intro --version)
 set_tests_properties(cli.version_matches PROPERTIES PASS_REGULAR_EXPRESSION "${PROJECT_VERSION}")
 
 # Main tests
-add_executable(tests demo_test.cpp)
+add_executable(tests game_logic_test.cpp)
 target_link_libraries(tests PRIVATE project_warnings project_options catch_main)
+target_include_directories(tests PRIVATE "../include")
 
 catch_discover_tests(tests)
