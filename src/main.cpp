@@ -3,7 +3,8 @@
 #include <ftxui/component/screen_interactive.hpp>
 #include <spdlog/spdlog.h>
 
-#include <numbers>
+#include <chrono>
+#include <random>
 
 #include "instruments.hpp"
 
@@ -76,20 +77,31 @@ Options: -h --help    Show this screen.
                 // version string, acquired from config.hpp via CMake
                 Yes::cmake::project_version)) };
 
-        std::array<double, 3> ring_offsets{ 0.0, 0.0, 0.0 };
+        std::array<double, 3> ring_offsets{ 0, 0, 0 };
         std::size_t current_ring{ 0 };
         auto screen{ ftxui::ScreenInteractive::TerminalOutput() };
 
+        // randomise the correct pin position
+        std::random_device random_device;
+        std::mt19937 random_engine(random_device());
+        std::uniform_int_distribution<int> endpoint_rng(1, 6);// NOLINT
+        std::array<int, 3> endpoints{
+            endpoint_rng(random_engine), endpoint_rng(random_engine), endpoint_rng(random_engine)
+        };
+
         const auto cylinder{ ftxui::Renderer(make_lock_cylinder(ring_offsets)) };
-        const auto graph{ ftxui::Renderer(make_plot_graph(current_ring, ring_offsets)) };
+        const auto graph{ ftxui::Renderer(make_plot_graph(current_ring, ring_offsets, endpoints)) };
         const auto text_box{ ftxui::Renderer(make_info_box(current_ring)) };
 
         const auto game_logic{ ftxui::Renderer([&] {
             if (current_ring >= ring_offsets.size()) {
                 screen.ExitLoopClosure()();
-                return ftxui::hbox(ftxui::text("GAME OVER")) | ftxui::border;
+                if (check_victory(ring_offsets, endpoints)) {
+                    return ftxui::hbox(ftxui::text("YOU WIN") | ftxui::borderDouble);
+                }
+                return ftxui::hbox(ftxui::text("GAME OVER")) | ftxui::borderDouble;
             }
-            return ftxui::hbox(cylinder->Render() | ftxui::borderDouble,
+            return ftxui::hbox(cylinder->Render(),
                 ftxui::vbox(graph->Render() | ftxui::borderDouble,
                     text_box->Render() | ftxui::borderDouble));
         }) };
@@ -97,7 +109,7 @@ Options: -h --help    Show this screen.
         const auto event_handler{ ftxui::CatchEvent(
             game_logic, [&current_ring, &ring_offsets](const ftxui::Event& event) {
                 using ftxui::Event;
-                static constexpr auto delta{ 0.02 };
+                static constexpr auto delta{ 0.03 };
                 if (event == Event::Character(' ')) { ++current_ring; }
                 if (event == Event::Character('a')) { ring_offsets.at(current_ring) -= delta; }
                 if (event == Event::Character('d')) { ring_offsets.at(current_ring) += delta; }
