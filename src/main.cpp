@@ -3,7 +3,6 @@
 #include <ftxui/component/screen_interactive.hpp>
 #include <spdlog/spdlog.h>
 
-#include <chrono>
 #include <random>
 
 #include "instruments.hpp"
@@ -93,11 +92,17 @@ Options: -h --help    Show this screen.
         const auto graph{ ftxui::Renderer(make_plot_graph(current_ring, ring_offsets, endpoints)) };
         const auto text_box{ ftxui::Renderer(make_info_box(current_ring)) };
 
+        std::chrono::system_clock::time_point start_time{};
         const auto game_logic{ ftxui::Renderer([&] {
             if (current_ring >= ring_offsets.size()) {
                 screen.ExitLoopClosure()();
                 if (check_victory(ring_offsets, endpoints)) {
-                    return ftxui::hbox(ftxui::text("YOU WIN") | ftxui::borderDouble);
+                    const auto duration{ std::chrono::high_resolution_clock::now() - start_time };
+                    const auto score{ std::to_string(
+                        calculate_score(ring_offsets, endpoints, duration)) };
+                    return ftxui::hbox(
+                        ftxui::text("YOU WIN, SCORE WAS: " + score + "\nthe lower the better")
+                        | ftxui::borderDouble);
                 }
                 return ftxui::hbox(ftxui::text("GAME OVER")) | ftxui::borderDouble;
             }
@@ -111,11 +116,15 @@ Options: -h --help    Show this screen.
                 using ftxui::Event;
                 static constexpr auto delta{ 0.03 };
                 if (event == Event::Character(' ')) { ++current_ring; }
-                if (event == Event::Character('a')) { ring_offsets.at(current_ring) -= delta; }
-                if (event == Event::Character('d')) { ring_offsets.at(current_ring) += delta; }
+                if (event == Event::Character('a') || event == Event::Character('h')) {
+                    ring_offsets.at(current_ring) -= delta;
+                }
+                if (event == Event::Character('d') || event == Event::Character('l')) {
+                    ring_offsets.at(current_ring) += delta;
+                }
                 return false;
             }) };
-
+        start_time = std::chrono::high_resolution_clock::now();
         screen.Loop(event_handler);
 
         return 0;
