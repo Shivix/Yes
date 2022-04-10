@@ -92,7 +92,8 @@ Options: -h --help    Show this screen.
         const auto graph{ ftxui::Renderer(make_plot_graph(current_ring, ring_offsets, endpoints)) };
         const auto text_box{ ftxui::Renderer(make_info_box(current_ring)) };
 
-        std::chrono::system_clock::time_point start_time{};
+        // std::chrono::system_clock::time_point start_time{};
+        auto start_time{ std::chrono::high_resolution_clock::now() };
         const auto game_logic{ ftxui::Renderer([&] {
             if (current_ring >= ring_offsets.size()) {
                 screen.ExitLoopClosure()();
@@ -101,10 +102,10 @@ Options: -h --help    Show this screen.
                     const auto score{ std::to_string(
                         calculate_score(ring_offsets, endpoints, duration)) };
                     return ftxui::hbox(
-                        ftxui::text("YOU WIN, SCORE WAS: " + score + "\nthe lower the better")
+                        ftxui::text("YOU WIN, SCORE WAS: " + score + "\n (the lower the better)")
                         | ftxui::borderDouble);
                 }
-                return ftxui::hbox(ftxui::text("GAME OVER")) | ftxui::borderDouble;
+                return ftxui::hbox(ftxui::text("SORRY, YOU FAILED. GAME OVER")) | ftxui::borderDouble;
             }
             return ftxui::hbox(cylinder->Render(),
                 ftxui::vbox(graph->Render() | ftxui::borderDouble,

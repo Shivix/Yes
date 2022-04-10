@@ -25,7 +25,7 @@
 
 [[nodiscard]] constexpr long calculate_score(const std::array<double, 3>& offsets,
     const std::array<int, 3>& endpoints,
-    std::chrono::system_clock::duration duration)
+    const std::chrono::steady_clock::duration duration)
 {
     long score{};
     const auto max_pin_accuracy{ 2000.0 };
@@ -34,7 +34,7 @@
             max_pin_accuracy
             - (check_pin_position(offsets.at(i), endpoints.at(i)) * 100.0));// NOLINT
     }
-    score *= duration.count();
+    score *= std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
     return score;
 }
 
