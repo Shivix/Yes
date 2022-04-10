@@ -2,6 +2,7 @@
 #define GAME_LOGIC_HPP
 
 #include <array>
+#include <chrono>
 #include <cmath>
 #include <numbers>
 
@@ -20,6 +21,21 @@
         if (check_pin_position(offsets.at(i), endpoints.at(i)) < victory_margin) { return false; }
     }
     return true;
+}
+
+[[nodiscard]] constexpr long calculate_score(const std::array<double, 3>& offsets,
+    const std::array<int, 3>& endpoints,
+    const std::chrono::steady_clock::duration duration)
+{
+    long score{};
+    const auto max_pin_accuracy{ 2000.0 };
+    for (std::size_t i{ 0 }; i < offsets.size(); ++i) {
+        score += static_cast<long>(
+            max_pin_accuracy
+            - (check_pin_position(offsets.at(i), endpoints.at(i)) * 100.0));// NOLINT
+    }
+    score *= std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+    return score;
 }
 
 #endif// GAME_LOGIC_HPP
